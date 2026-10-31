@@ -1,0 +1,48 @@
+ML_A3_CODE
+import numpy as np
+import matplotlib.pyplot as plt
+# Function
+def function(x):
+    return (x + 3) ** 2
+# Derivative of the function
+def derivative(x):
+    return 2 * (x + 3)
+# Starting point
+x = 2
+# Learning rate
+learning_rate = 0.1
+# Number of iterations
+iterations = 20
+# Store values for plotting
+x_values = []
+y_values = []
+# Gradient Descent
+for i in range(iterations):
+    # Store current values
+    x_values.append(x)
+    y_values.append(function(x))
+    # Calculate gradient
+    gradient = derivative(x)
+    # Update x
+    x = x - learning_rate * gradient
+    print(
+        &quot;Iteration:&quot;, i + 1,
+        &quot;x =&quot;, round(x, 6),
+        &quot;y =&quot;, round(function(x), 6)
+
+    )
+# Final result
+print(&quot;\nLocal Minimum:&quot;)
+print(&quot;x =&quot;, x)
+print(&quot;y =&quot;, function(x))
+# Plot the function
+x_plot = np.linspace(-6, 4, 100)
+y_plot = function(x_plot)
+plt.plot(x_plot, y_plot, label=&quot;y = (x + 3)^2&quot;)
+plt.scatter(x_values, y_values, color=&quot;red&quot;, label=&quot;Gradient Descent&quot;)
+plt.xlabel(&quot;x&quot;)
+plt.ylabel(&quot;y&quot;)
+plt.title(&quot;Gradient Descent&quot;)
+plt.legend()
+plt.grid()
+plt.show()
