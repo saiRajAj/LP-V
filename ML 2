@@ -1,0 +1,240 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+    classification_report
+)
+# ============================================================
+# 2. LOAD DATASET
+# ============================================================
+import pandas as pd
+from google.colab import drive
+# Mount Google Drive
+drive.mount(&#39;/content/drive&#39;)
+# Read dataset
+df = pd.read_csv(&#39;/content/drive/MyDrive/emails.csv&#39;)
+# Display first 5 rows
+print(&quot;First 5 rows:&quot;)
+print(df.head())
+# Display dataset shape
+print(&quot;\nDataset shape:&quot;)
+print(df.shape)
+# Display column names
+
+print(&quot;\nColumn names:&quot;)
+print(df.columns)
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+    classification_report
+)
+# ============================================================
+# 3. CHECK MISSING VALUES
+# ============================================================
+print(&quot;\nMissing values:&quot;)
+print(df.isnull().sum())
+# ============================================================
+# 4. REMOVE UNNECESSARY COLUMN
+# ============================================================
+# The Kaggle dataset commonly contains an unnecessary
+# unnamed/index column.
+if &quot;Unnamed: 0&quot; in df.columns:
+    df.drop(&quot;Unnamed: 0&quot;, axis=1, inplace=True)
+# ============================================================
+# 5. IDENTIFY TEXT AND TARGET COLUMNS
+# ============================================================
+
+print(&quot;\nColumns after cleaning:&quot;)
+print(df.columns)
+# For this dataset:
+# features are word counts (all columns except &#39;Email No.&#39; and &#39;Prediction&#39;)
+# target column = Prediction
+X = df.drop(columns=[&#39;Email No.&#39;, &#39;Prediction&#39;])
+y = df[&quot;Prediction&quot;]
+# ============================================================
+# 6. HANDLE MISSING VALUES
+# ============================================================
+X = X.fillna(0) # Assuming 0 is a reasonable fill value for word counts
+# Remove rows where target is missing
+valid_rows = y.notna()
+X = X[valid_rows]
+y = y[valid_rows]
+# ============================================================
+# 7. CHECK CLASS DISTRIBUTION
+# ============================================================
+print(&quot;\nClass distribution:&quot;)
+print(y.value_counts())
+print(&quot;\nClass distribution in percentage:&quot;)
+print(y.value_counts(normalize=True) * 100)
+# ============================================================
+# 8. CONVERT TEXT INTO NUMERICAL FEATURES
+#    USING TF-IDF
+# ============================================================
+print(&quot;\nFeature matrix shape:&quot;)
+print(X.shape)
+# ============================================================
+# 9. SPLIT DATA INTO TRAINING AND TESTING
+
+# ============================================================
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
+)
+print(&quot;\nTraining data:&quot;, X_train.shape)
+print(&quot;Testing data:&quot;, X_test.shape)
+# ============================================================
+# 10. K-NEAREST NEIGHBORS (KNN)
+# ============================================================
+knn = KNeighborsClassifier(
+    n_neighbors=5,
+    metric=&quot;cosine&quot;
+)
+knn.fit(X_train, y_train)
+y_pred_knn = knn.predict(X_test)
+# ============================================================
+# 11. SUPPORT VECTOR MACHINE (SVM)
+# ============================================================
+svm = SVC(
+    kernel=&quot;linear&quot;,
+    random_state=42
+)
+svm.fit(X_train, y_train)
+y_pred_svm = svm.predict(X_test)
+# ============================================================
+# 12. EVALUATE KNN
+# ============================================================
+
+accuracy_knn = accuracy_score(y_test, y_pred_knn)
+precision_knn = precision_score(y_test, y_pred_knn, average=&#39;weighted&#39;, zero_division=0) #
+Added average and zero_division for multi-class
+recall_knn = recall_score(y_test, y_pred_knn, average=&#39;weighted&#39;, zero_division=0) # Added
+average and zero_division for multi-class
+f1_knn = f1_score(y_test, y_pred_knn, average=&#39;weighted&#39;, zero_division=0) # Added
+average and zero_division for multi-class
+print(&quot;\n================================&quot;)
+print(&quot;KNN PERFORMANCE&quot;)
+print(&quot;================================&quot;)
+print(&quot;Accuracy  :&quot;, accuracy_knn)
+print(&quot;Precision :&quot;, precision_knn)
+print(&quot;Recall    :&quot;, recall_knn)
+print(&quot;F1 Score  :&quot;, f1_knn)
+print(&quot;\nClassification Report:&quot;)
+print(classification_report(y_test, y_pred_knn, zero_division=0)) # Added zero_division
+# ============================================================
+# 13. CONFUSION MATRIX - KNN
+# ============================================================
+cm_knn = confusion_matrix(y_test, y_pred_knn)
+plt.figure(figsize=(6, 5))
+sns.heatmap(
+    cm_knn,
+    annot=True,
+    fmt=&quot;d&quot;,
+    cmap=&quot;Blues&quot;
+)
+plt.xlabel(&quot;Predicted&quot;)
+plt.ylabel(&quot;Actual&quot;)
+plt.title(&quot;KNN Confusion Matrix&quot;)
+plt.show()
+
+# ============================================================
+# 14. EVALUATE SVM
+# ============================================================
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+precision_svm = precision_score(y_test, y_pred_svm, average=&#39;weighted&#39;, zero_division=0)
+# Added average and zero_division for multi-class
+recall_svm = recall_score(y_test, y_pred_svm, average=&#39;weighted&#39;, zero_division=0) #
+Added average and zero_division for multi-class
+f1_svm = f1_score(y_test, y_pred_svm, average=&#39;weighted&#39;, zero_division=0) # Added
+average and zero_division for multi-class
+print(&quot;\n================================&quot;)
+print(&quot;SVM PERFORMANCE&quot;)
+print(&quot;================================&quot;)
+print(&quot;Accuracy  :&quot;, accuracy_svm)
+print(&quot;Precision :&quot;, precision_svm)
+print(&quot;Recall    :&quot;, recall_svm)
+print(&quot;F1 Score  :&quot;, f1_svm)
+print(&quot;\nClassification Report:&quot;)
+print(classification_report(y_test, y_pred_svm, zero_division=0)) # Added zero_division
+# ============================================================
+# 15. CONFUSION MATRIX - SVM
+# ============================================================
+cm_svm = confusion_matrix(y_test, y_pred_svm)
+plt.figure(figsize=(6, 5))
+sns.heatmap(
+    cm_svm,
+    annot=True,
+    fmt=&quot;d&quot;,
+    cmap=&quot;Blues&quot;
+)
+
+plt.xlabel(&quot;Predicted&quot;)
+plt.ylabel(&quot;Actual&quot;)
+plt.title(&quot;SVM Confusion Matrix&quot;)
+plt.show()
+# ============================================================
+# 16. COMPARE KNN AND SVM
+# ============================================================
+results = pd.DataFrame({
+    &quot;Model&quot;: [
+        &quot;KNN&quot;,
+        &quot;SVM&quot;
+    ],
+    &quot;Accuracy&quot;: [
+        accuracy_knn,
+        accuracy_svm
+    ],
+    &quot;Precision&quot;: [
+        precision_knn,
+        precision_svm
+    ],
+    &quot;Recall&quot;: [
+        recall_knn,
+        recall_svm
+    ],
+    &quot;F1 Score&quot;: [
+        f1_knn,
+        f1_svm
+    ]
+})
+print(&quot;\n================================&quot;)
+print(&quot;MODEL COMPARISON&quot;)
+print(&quot;================================&quot;)
+print(results)
+
+# ============================================================
+# 17. PERFORMANCE COMPARISON GRAPH
+# ============================================================
+results.set_index(&quot;Model&quot;).plot(
+    kind=&quot;bar&quot;,
+    figsize=(10, 6)
+)
+plt.title(&quot;KNN vs SVM Performance&quot;)
+plt.ylabel(&quot;Score&quot;)
+plt.ylim(0, 1)
+plt.xticks(rotation=0)
+plt.legend()
+plt.show()
