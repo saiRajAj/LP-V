@@ -1,0 +1,197 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import (
+    confusion_matrix,
+    accuracy_score,
+    precision_score,
+    recall_score
+)
+# 2. LOAD DATASET
+from google.colab import drive
+# Mount Google Drive
+drive.mount(&#39;/content/drive&#39;)
+# Read dataset
+df = pd.read_csv(&#39;/content/drive/MyDrive/diabetes.csv&#39;)
+# 3. READ THE DATASET
+
+print(&quot;First 5 rows:&quot;)
+print(df.head())
+
+print(&quot;\nDataset shape:&quot;)
+print(df.shape)
+
+print(&quot;\nDataset information:&quot;)
+print(df.info())
+
+# ============================================================
+# 4. CHECK FOR MISSING VALUES
+
+# ============================================================
+
+print(&quot;\nMissing values:&quot;)
+print(df.isnull().sum())
+
+# ============================================================
+# 5. SEPARATE FEATURES AND TARGET
+# ============================================================
+
+# X = independent/input features
+# y = dependent/target variable
+
+X = df.drop(&quot;Outcome&quot;, axis=1)
+y = df[&quot;Outcome&quot;]
+
+print(&quot;\nFeatures:&quot;)
+print(X.columns)
+
+print(&quot;\nTarget:&quot;)
+print(&quot;Outcome&quot;)
+
+# ============================================================
+# 6. DIVIDE DATA INTO TRAINING AND TESTING SETS
+# ============================================================
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
+)
+
+print(&quot;\nTraining data shape:&quot;)
+
+print(X_train.shape)
+
+print(&quot;\nTesting data shape:&quot;)
+print(X_test.shape)
+
+# ============================================================
+# 7. NORMALIZE / STANDARDIZE THE FEATURES
+# ============================================================
+
+scaler = StandardScaler()
+
+# Fit scaler on training data
+X_train = scaler.fit_transform(X_train)
+
+# Apply same transformation to test data
+X_test = scaler.transform(X_test)
+
+# ============================================================
+# 8. CREATE KNN MODEL
+# ============================================================
+
+knn = KNeighborsClassifier(
+    n_neighbors=5
+)
+
+# ============================================================
+# 9. TRAIN THE MODEL
+# ============================================================
+
+knn.fit(X_train, y_train)
+
+# ============================================================
+# 10. MAKE PREDICTIONS
+# ============================================================
+
+y_pred = knn.predict(X_test)
+
+# ============================================================
+# 11. CONFUSION MATRIX
+# ============================================================
+
+cm = confusion_matrix(y_test, y_pred)
+
+print(&quot;\nConfusion Matrix:&quot;)
+print(cm)
+
+# Display confusion matrix graphically
+
+plt.figure(figsize=(6, 5))
+
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt=&quot;d&quot;,
+    cmap=&quot;Blues&quot;,
+    xticklabels=[&quot;No Diabetes&quot;, &quot;Diabetes&quot;],
+    yticklabels=[&quot;No Diabetes&quot;, &quot;Diabetes&quot;]
+)
+
+plt.xlabel(&quot;Predicted&quot;)
+plt.ylabel(&quot;Actual&quot;)
+plt.title(&quot;KNN Confusion Matrix&quot;)
+
+plt.show()
+
+# ============================================================
+# 12. ACCURACY
+# ============================================================
+
+accuracy = accuracy_score(
+    y_test,
+    y_pred
+)
+
+print(&quot;\nAccuracy:&quot;)
+print(accuracy)
+
+print(&quot;\nAccuracy Percentage:&quot;)
+print(accuracy * 100)
+
+# ============================================================
+# 13. ERROR RATE
+# ============================================================
+
+error_rate = 1 - accuracy
+
+print(&quot;\nError Rate:&quot;)
+print(error_rate)
+
+print(&quot;\nError Rate Percentage:&quot;)
+print(error_rate * 100)
+
+# ============================================================
+# 14. PRECISION
+# ============================================================
+
+precision = precision_score(
+    y_test,
+    y_pred
+)
+
+print(&quot;\nPrecision:&quot;)
+
+print(precision)
+
+# ============================================================
+# 15. RECALL
+# ============================================================
+
+recall = recall_score(
+    y_test,
+    y_pred
+)
+
+print(&quot;\nRecall:&quot;)
+print(recall)
+
+# ============================================================
+# 16. PRINT ALL RESULTS
+# ============================================================
+
+print(&quot;\n====================================&quot;)
+print(&quot;KNN PERFORMANCE&quot;)
+print(&quot;====================================&quot;)
+
+print(&quot;Accuracy  :&quot;, accuracy)
+print(&quot;Error Rate:&quot;, error_rate)
+print(&quot;Precision :&quot;, precision)
+print(&quot;Recall    :&quot;, recall)
